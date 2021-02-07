@@ -37,9 +37,24 @@ repos:
           - flake8-bugbear
           - flake8-builtins
           - flake8-comprehensions
+          - flake8-logging-format
           - flake8-printf-formatting
           - flake8-pytest-style
           - flake8-use-fstring
+
+#  # Docstrings
+#  - repo: https://gitlab.com/pycqa/flake8
+#    rev: 3.8.3
+#    hooks:
+#      - id: flake8
+#        name: flake8-docstrings
+#        exclude: "__init__.py"
+#        args:
+#          - "--max-line-length=120"
+#          - "--select=D"
+#          - "--ignore=D100"
+#        additional_dependencies:
+#          - flake8-docstrings
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.790
@@ -47,14 +62,14 @@ repos:
       - id: mypy
         exclude: "patch.py"
         args:
-           - "--allow-redefinition"
-           - "--disallow-incomplete-defs"
-           - "--disallow-untyped-calls"
-           - "--ignore-missing-imports"
-           - "--warn-redundant-casts"
-           - "--warn-unused-ignores"
-           - "--warn-unreachable"
-           - "--strict-equality"
+          - "--allow-redefinition"
+          - "--disallow-incomplete-defs"
+          - "--disallow-untyped-calls"
+          - "--ignore-missing-imports"
+          - "--warn-redundant-casts"
+          - "--warn-unused-ignores"
+          - "--warn-unreachable"
+          - "--strict-equality"
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.4.0
@@ -69,5 +84,4 @@ repos:
       - id: check-symlinks
       - id: debug-statements
       - id: end-of-file-fixer
-      - id: no-commit-to-branch
       - id: trailing-whitespace

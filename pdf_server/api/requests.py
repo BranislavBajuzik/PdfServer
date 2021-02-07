@@ -14,8 +14,7 @@ auth_token = app.config["auth_token"]
 
 
 def assert_authorized() -> None:
-    """Checks that the request is authorized."""
-
+    """Check that the request is authorized."""
     if token := flask.request.headers.get("Authorization", default=None):
         token = token.split(" ")[1]
 
@@ -24,8 +23,7 @@ def assert_authorized() -> None:
 
 
 def api(api_function: Callable = None, /, *, rule: str, **options: Any) -> Callable:
-    """Wraps the :param api_function: to simplify (error) handling"""
-
+    """Wrap the :param api_function: to simplify (error) handling."""
     # Called with brackets: @api()
     if api_function is None:
         return partial(api, rule=rule, **options)

@@ -1,3 +1,5 @@
+dramatiq[rabbitmq]
 flask
 pony
+pdf2image
 psycopg2

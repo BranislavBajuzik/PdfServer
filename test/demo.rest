@@ -5,7 +5,7 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 --WebAppBoundary
 Content-Disposition: form-data; name="document"; filename="document.pdf"
 
-< .pre-commit-config.yaml
+< sample.pdf
 --WebAppBoundary--
 
 ###

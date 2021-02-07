@@ -1,6 +1,5 @@
 import patch  # isort:skip  # noqa: F401  # Patch libraries, must be called first
 
-import logging
 from typing import Any, Dict
 
 import flask
@@ -17,7 +16,7 @@ def pdf_upload() -> Dict[str, int]:
     if (doc := flask.request.files.get("document")) is None:
         raise BadRequestException("Form-data `document` is required")
 
-    document_id = pdf_manager.upload(document=doc.read())
+    document_id = pdf_manager.upload(document_bytes=doc.read())
 
     return {"id": document_id}
 
@@ -35,9 +34,6 @@ def pdf_page(document_id: int, number: int) -> flask.Response:
 
 
 if __name__ == "__main__":
-    # Setup logging
-    logging.basicConfig(level="DEBUG")
-
     pdf_manager = PdfManager()
 
     with DatabaseConnection():
