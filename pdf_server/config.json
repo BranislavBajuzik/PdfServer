@@ -1,9 +1,9 @@
 {
     "storage": "pdf_storage/",
-    "auth_token": "Bearer 12345",
+    "auth_token": "12345",
     "database": {
         "user": "user1",
-        "password": 12345,
+        "password": "12345",
         "database": "pdf"
     }
 }

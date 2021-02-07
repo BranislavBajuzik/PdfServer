@@ -1,6 +1,7 @@
 __all__ = [
     "PdfException",
     "RequestException",
+    "BadRequestException",
     "UnauthorizedRequestException",
     "BadEntityRequestException",
     "DatabaseException",
@@ -13,6 +14,10 @@ class PdfException(Exception):
 
 class RequestException(PdfException):
     code: int
+
+
+class BadRequestException(RequestException):
+    code = 400
 
 
 class UnauthorizedRequestException(RequestException):

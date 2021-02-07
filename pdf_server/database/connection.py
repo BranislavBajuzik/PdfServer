@@ -17,8 +17,8 @@ class DatabaseConnection:
     def connect(self) -> None:
         try:
             db.bind(provider="postgres", host="localhost", **app.config["database"])
-        except DatabaseException:
-            raise DatabaseException("Unable to connect to the database") from None
+        except DatabaseException as ex:
+            raise DatabaseException(f"Unable to connect to the database: {ex}") from None
 
         db.generate_mapping(create_tables=True)
 

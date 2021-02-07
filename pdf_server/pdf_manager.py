@@ -1,7 +1,8 @@
 import logging
 from dataclasses import dataclass
-from enum import Enum
+from enum import IntEnum
 from pathlib import Path
+from typing import Any, Dict
 
 from pony.orm import commit
 
@@ -12,7 +13,7 @@ from pdf_server.exceptions import BadEntityRequestException
 __all__ = ["PdfManager"]
 
 
-class PdfStatus(Enum):
+class PdfStatus(IntEnum):
     PROCESSING = 0
     DONE = 1
 
@@ -21,6 +22,9 @@ class PdfStatus(Enum):
 class PdfInfo:
     status: PdfStatus
     n_pages: int
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"status": self.status.name.lower(), "n_pages": self.n_pages}
 
 
 def page_path(document: Document, page_number: int) -> Path:
@@ -33,7 +37,7 @@ class PdfManager:
         self._logger = logging.getLogger(self.__class__.__name__)
 
     def upload(self, document: bytes) -> int:
-        doc = Document(PdfStatus.PROCESSING, 0)
+        doc = Document(status=PdfStatus.PROCESSING, n_pages=0)
 
         commit()
 
@@ -42,10 +46,10 @@ class PdfManager:
     def get_info(self, document_id: int) -> PdfInfo:
         doc = Document.get(id=document_id)
 
-        if not doc:
+        if doc is None:
             raise BadEntityRequestException(f"Document[{document_id}] not found")
 
-        return PdfInfo(doc.status, doc.n_pages)
+        return PdfInfo(PdfStatus(doc.status), doc.n_pages)
 
     def get_page(self, document_id: int, page_number: int) -> Path:
         doc = Document.get(id=document_id)

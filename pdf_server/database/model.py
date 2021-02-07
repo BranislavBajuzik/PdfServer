@@ -7,5 +7,5 @@ db = Database()
 
 
 class Document(db.Entity):  # type: ignore
-    processing_status = Required(int, size=8)
+    status = Required(int, size=8)
     n_pages = Required(int, size=16)

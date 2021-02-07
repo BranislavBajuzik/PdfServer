@@ -41,9 +41,9 @@ def api(api_function: Callable = None, /, *, rule: str, **options: Any) -> Calla
 
                 ret = api_function(*args, **kwargs)
 
-                if issubclass(ret, flask.Response):
+                if isinstance(ret, flask.Response):
                     return ret
-                if issubclass(ret, tuple):
+                if isinstance(ret, tuple):
                     return flask.jsonify(ret[0]), *ret[1:]
 
                 return flask.jsonify(ret)
@@ -63,4 +63,4 @@ def api(api_function: Callable = None, /, *, rule: str, **options: Any) -> Calla
 
         return ret
 
-    return app.route(rule, **options)(handler(api_function))
+    return app.route(rule, **options)(handler)

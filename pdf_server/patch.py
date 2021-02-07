@@ -10,7 +10,7 @@ def single_pony_exception() -> None:
     """
     import builtins
 
-    from exceptions import DatabaseException
+    from pdf_server.exceptions import DatabaseException
 
     original_exception = builtins.Exception
 

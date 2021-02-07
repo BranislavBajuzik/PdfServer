@@ -4,8 +4,8 @@ services:
   dataset-db:
     image: postgres:13
     environment:
-      POSTGRES_PASSWORD: user1
-      POSTGRES_USER: 12345
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_USER: user1
       POSTGRES_DB: pdf
     ports:
       - 5432:5432
