@@ -1,0 +1,73 @@
+# Run these hooks before each commit to ensure code style integrity
+# https://pre-commit.com/
+
+default_language_version:
+    python: python3.8
+
+repos:
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.7.0
+    hooks:
+      - id: isort
+        exclude: "__init__.py"
+        args:
+          - "--line-length=120"
+          - "--multi-line=VERTICAL_HANGING_INDENT"
+          - "--trailing-comma"
+
+  - repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+      - id: black
+        args:
+          - "--line-length=120"
+
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
+        exclude: "__init__.py"
+        args:
+          - "--max-line-length=120"
+          - "--extend-ignore=E203,E402"
+          - "--pytest-parametrize-names-type=csv"
+          - "--pytest-fixture-no-parentheses"
+          - "--pytest-parametrize-values-type=tuple"
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-builtins
+          - flake8-comprehensions
+          - flake8-printf-formatting
+          - flake8-pytest-style
+          - flake8-use-fstring
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.790
+    hooks:
+      - id: mypy
+        exclude: "patch.py"
+        args:
+           - "--allow-redefinition"
+           - "--disallow-incomplete-defs"
+           - "--disallow-untyped-calls"
+           - "--ignore-missing-imports"
+           - "--warn-redundant-casts"
+           - "--warn-unused-ignores"
+           - "--warn-unreachable"
+           - "--strict-equality"
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.4.0
+    hooks:
+      - id: fix-byte-order-marker
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: no-commit-to-branch
+      - id: trailing-whitespace

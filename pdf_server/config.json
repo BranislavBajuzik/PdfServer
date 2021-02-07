@@ -1,0 +1,9 @@
+{
+    "storage": "pdf_storage/",
+    "auth_token": "12345",
+    "database": {
+        "user": "user1",
+        "password": "12345",
+        "database": "pdf"
+    }
+}
