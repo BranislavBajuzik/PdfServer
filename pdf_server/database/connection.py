@@ -1,9 +1,9 @@
 from pony.orm import set_sql_debug
 
 from pdf_server.app import app
-from pdf_server.database import db
-from pdf_server.exceptions import *
+from pdf_server.exceptions import DatabaseException
 
+from . import db
 
 __all__ = ["DatabaseConnection"]
 
@@ -14,7 +14,7 @@ class DatabaseConnection:
 
         set_sql_debug(debug)
 
-    def connect(self):
+    def connect(self) -> None:
         try:
             db.bind(provider="postgres", host="localhost", **app.config["database"])
         except DatabaseException:
@@ -24,7 +24,7 @@ class DatabaseConnection:
 
         self._connected = True
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         if self._connected:
             db.disconnect()
 

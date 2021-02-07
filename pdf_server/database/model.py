@@ -1,13 +1,11 @@
-from pony.orm import *
+from pony.orm import Database, Required
 
-
-__all__ = ["db", "db_session", "select", "delete", "commit", "rollback"]
+__all__ = ["db", "Document"]
 
 
 db = Database()
 
 
-class Document(db.Entity):
-    id = PrimaryKey(int, auto=True)
+class Document(db.Entity):  # type: ignore
     processing_status = Required(int, size=8)
     n_pages = Required(int, size=16)

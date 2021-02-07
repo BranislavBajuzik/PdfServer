@@ -1,10 +1,12 @@
-import patch  # Patch libraries
+import patch  # isort:skip  # noqa: F401  # Patch libraries, must be called first
+
 import logging
-from flask import send_file
 from typing import Any, Dict
 
-from pdf_server.app import app
+import flask
+
 from pdf_server.api import api
+from pdf_server.app import app
 from pdf_server.database import DatabaseConnection
 from pdf_server.pdf_manager import PdfManager
 
@@ -24,10 +26,10 @@ def pdf_info(document_id: int) -> Dict[str, Any]:
 
 
 @api(rule="/documents/<int:document_id>/pages/<int:number>", methods=["GET"])
-def pdf_page(document_id: int, number: int):
+def pdf_page(document_id: int, number: int) -> flask.Response:
     page_path = pdf_manager.get_page(document_id, number)
 
-    return send_file(page_path, mimetype='image/jpeg')
+    return flask.send_file(page_path, mimetype="image/png")
 
 
 if __name__ == "__main__":

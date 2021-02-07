@@ -1,12 +1,12 @@
 from collections import Callable
-from functools import wraps, partial
+from functools import partial, wraps
+from typing import Any
 
 import flask
 from pony.orm import db_session, rollback
 
 from pdf_server.app import app
-from pdf_server.exceptions import UnauthorizedRequestException, RequestException, DatabaseException, PdfException
-
+from pdf_server.exceptions import DatabaseException, PdfException, RequestException, UnauthorizedRequestException
 
 __all__ = ["api"]
 
@@ -23,14 +23,14 @@ def assert_authorized() -> None:
         raise UnauthorizedRequestException("Invalid token")
 
 
-def api(api_function: Callable = None, /, *, rule, **options):
+def api(api_function: Callable = None, /, *, rule: str, **options: Any) -> Callable:
     """Wraps the :param api_function: to simplify (error) handling"""
 
-    # Called with brackets: @api_wrapper()
+    # Called with brackets: @api()
     if api_function is None:
         return partial(api, rule=rule, **options)
 
-    # Called without brackets: @api_wrapper
+    # Called without brackets: @api
 
     @wraps(api_function)
     @db_session
