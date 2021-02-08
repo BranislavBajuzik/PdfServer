@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 
 import dramatiq
+from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from pdf2image import convert_from_path
 from PIL import Image
 from pony.orm import db_session
@@ -16,6 +17,9 @@ from pdf_server.database import DatabaseConnection, Document, PdfStatus
 TARGET_RECTANGLE = app.config["image_size"]
 TARGET_RATIO = TARGET_RECTANGLE[1] / TARGET_RECTANGLE[0]
 
+
+rabbitmq_broker = RabbitmqBroker(**app.config["rabbitmq"])
+dramatiq.set_broker(rabbitmq_broker)
 
 connection = DatabaseConnection()
 connection.connect()
@@ -48,7 +52,9 @@ def process_pdf(path: str) -> None:
 
     try:
         pages: List[Image.Image] = convert_from_path(path, dpi=500, fmt="png")
-    except Exception:
+        print(f"Found {len(pages)} pages ({path})")
+    except Exception as ex:
+        print(f"Unable to process pdf: {ex}")
         pages = []
 
     page_index = 0

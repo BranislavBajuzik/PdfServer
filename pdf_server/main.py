@@ -1,3 +1,8 @@
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).absolute().parent.parent))
+
 from pdf_server.backend import app
 from pdf_server.database import DatabaseConnection
 

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import dramatiq
+from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from pony.orm import commit
 
 from pdf_server.database import Document, PdfStatus
@@ -12,6 +13,10 @@ from pdf_server.exceptions import BadEntityRequestException
 from . import app
 
 __all__ = ["PdfManager"]
+
+
+rabbitmq_broker = RabbitmqBroker(**app.config["rabbitmq"])
+dramatiq.set_broker(rabbitmq_broker)
 
 
 @dramatiq.actor
@@ -43,7 +48,11 @@ class PdfManager:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(document_bytes)
 
-        process_pdf.send(str(path))
+        try:
+            process_pdf.send(str(path))
+        except Exception:
+            doc.delete()
+            raise
 
         return doc.id
 
