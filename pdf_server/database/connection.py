@@ -1,6 +1,6 @@
 from pony.orm import set_sql_debug
 
-from pdf_server.app import app
+from pdf_server.backend import app
 from pdf_server.exceptions import DatabaseException
 
 from . import db

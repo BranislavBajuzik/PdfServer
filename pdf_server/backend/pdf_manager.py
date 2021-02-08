@@ -1,21 +1,22 @@
 import logging
 from dataclasses import dataclass
-from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict
 
+import dramatiq
 from pony.orm import commit
 
-from pdf_server.app import app
-from pdf_server.database import Document
+from pdf_server.database import Document, PdfStatus
 from pdf_server.exceptions import BadEntityRequestException
+
+from . import app
 
 __all__ = ["PdfManager"]
 
 
-class PdfStatus(IntEnum):
-    PROCESSING = 0
-    DONE = 1
+@dramatiq.actor
+def process_pdf(path: str) -> None:
+    pass
 
 
 @dataclass
@@ -27,23 +28,27 @@ class PdfInfo:
         return {"status": self.status.name.lower(), "n_pages": self.n_pages}
 
 
-def page_path(document: Document, page_number: int) -> Path:
-    return Path(document.id, f"{page_number:04d}")
-
-
 class PdfManager:
     def __init__(self) -> None:
-        self._root = Path(app.config["storage"])
+        self._root = Path(app.config["storage"]).absolute()
         self._logger = logging.getLogger(self.__class__.__name__)
 
-    def upload(self, document: bytes) -> int:
+    def upload(self, document_bytes: bytes) -> int:
         doc = Document(status=PdfStatus.PROCESSING, n_pages=0)
 
         commit()
 
+        path = self._pdf_path(doc)
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(document_bytes)
+
+        process_pdf.send(str(path))
+
         return doc.id
 
-    def get_info(self, document_id: int) -> PdfInfo:
+    @staticmethod
+    def get_info(document_id: int) -> PdfInfo:
         doc = Document.get(id=document_id)
 
         if doc is None:
@@ -63,4 +68,13 @@ class PdfManager:
         if not 0 < page_number <= doc.n_pages:
             raise BadEntityRequestException(f"Document[{document_id}] does not have page no.{page_number}")
 
-        return self._root / page_path(doc, page_number)
+        return self._page_path(doc, page_number)
+
+    def _directory_path(self, document: Document) -> Path:
+        return self._root / str(document.id)
+
+    def _pdf_path(self, document: Document) -> Path:
+        return self._directory_path(document) / "document.pdf"
+
+    def _page_path(self, document: Document, page_number: int) -> Path:
+        return self._directory_path(document) / f"{page_number}.png"
