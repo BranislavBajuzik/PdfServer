@@ -48,6 +48,7 @@ def normalize_image(img: Image.Image) -> Image.Image:
 
 @dramatiq.actor(max_retries=0)
 def process_pdf(path: str) -> None:
+    """Dramatiq worker."""
     print(f"Processing {path}")
 
     try:
