@@ -1,4 +1,5 @@
 import atexit
+import sys
 from pathlib import Path
 from typing import List
 
@@ -6,6 +7,8 @@ import dramatiq
 from pdf2image import convert_from_path
 from PIL import Image
 from pony.orm import db_session
+
+sys.path.append(str(Path(__file__).absolute().parent.parent))
 
 from pdf_server.backend import app
 from pdf_server.database import DatabaseConnection, Document, PdfStatus
