@@ -44,7 +44,7 @@ class DatabaseConnection:
     @retry(n_retries=5)
     def connect(self) -> None:
         try:
-            db.bind(provider="postgres", host="localhost", **app.config["database"])
+            db.bind(provider="postgres", **app.config["database"])
         except Exception as ex:
             raise DatabaseException(f"Unable to connect to the database: {ex}") from None
 
@@ -56,7 +56,7 @@ class DatabaseConnection:
         if self._connected:
             db.disconnect()
 
-    def __del__(self):
+    def __del__(self) -> None:
         self.disconnect()
 
     def __enter__(self) -> "DatabaseConnection":
