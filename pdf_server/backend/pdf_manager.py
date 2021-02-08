@@ -29,16 +29,27 @@ class PdfInfo:
     status: PdfStatus
     n_pages: int
 
+    def __post_init__(self):
+        if not isinstance(self.status, PdfStatus):
+            self.status = PdfStatus(self.status)
+
     def to_dict(self) -> Dict[str, Any]:
         return {"status": self.status.name.lower(), "n_pages": self.n_pages}
 
 
 class PdfManager:
+    """Class managing the logic of the application."""
+
     def __init__(self) -> None:
         self._root = Path(app.config["storage"]).absolute()
         self._logger = logging.getLogger(self.__class__.__name__)
 
     def upload(self, document_bytes: bytes) -> int:
+        """Register Document for processing.
+
+        :param document_bytes: Raw PDF data.
+        :return: Document id.
+        """
         doc = Document(status=PdfStatus.PROCESSING, n_pages=0)
 
         commit()
@@ -58,14 +69,25 @@ class PdfManager:
 
     @staticmethod
     def get_info(document_id: int) -> PdfInfo:
+        """Get info about the requested PDF.
+
+        :param document_id: Id of the requested document.
+        :return: PdfInfo instance.
+        """
         doc = Document.get(id=document_id)
 
         if doc is None:
             raise BadEntityRequestException(f"Document[{document_id}] not found")
 
-        return PdfInfo(PdfStatus(doc.status), doc.n_pages)
+        return PdfInfo(doc.status, doc.n_pages)
 
     def get_page(self, document_id: int, page_number: int) -> Path:
+        """Get Path to the requested page.
+
+        :param document_id: Id of the requested Document.
+        :param page_number: Number of the requested page.
+        :return: Page Path.
+        """
         doc = Document.get(id=document_id)
 
         if not doc:

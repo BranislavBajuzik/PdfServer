@@ -13,6 +13,12 @@ __all__ = ["DatabaseConnection"]
 
 
 def retry(function: Callable = None, /, *, n_retries: int, wait_time: float = 3) -> Callable:
+    """Retry the execution of the decorated function :ref:`n_retries` or until it does not raise.
+
+    :param function: Function to decorate.
+    :param n_retries: Number of times to retry the execution.
+    :param wait_time: Amount of time to wait in-between retries.
+    """
     # Called with brackets: @retry()
     if function is None:
         return partial(retry, n_retries=n_retries)
@@ -36,6 +42,8 @@ def retry(function: Callable = None, /, *, n_retries: int, wait_time: float = 3)
 
 
 class DatabaseConnection:
+    """Database connection manager."""
+
     def __init__(self, debug: bool = False):
         self._connected = False
 
@@ -43,6 +51,7 @@ class DatabaseConnection:
 
     @retry(n_retries=5)
     def connect(self) -> None:
+        """Connect to the database."""
         try:
             db.bind(provider="postgres", **app.config["database"])
         except Exception as ex:
@@ -53,6 +62,7 @@ class DatabaseConnection:
         self._connected = True
 
     def disconnect(self) -> None:
+        """Disconnect from the database."""
         if self._connected:
             db.disconnect()
 

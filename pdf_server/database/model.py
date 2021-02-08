@@ -9,12 +9,14 @@ db = Database()
 
 
 class Document(db.Entity):  # type: ignore
-    """ORM."""
+    """ORM definition."""
 
     status = Required(int, size=8)
     n_pages = Required(int, size=16)
 
 
 class PdfStatus(IntEnum):
+    """Enum representing the state of a Document."""
+
     PROCESSING = 0
     DONE = 1
