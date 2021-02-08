@@ -3,14 +3,20 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict
 
+import dramatiq
 from pony.orm import commit
 
-from pdf_server.app import app
 from pdf_server.database import Document, PdfStatus
 from pdf_server.exceptions import BadEntityRequestException
-from pdf_server.pdf_processor import process_pdf
+
+from . import app
 
 __all__ = ["PdfManager"]
+
+
+@dramatiq.actor
+def process_pdf(path: str) -> None:
+    pass
 
 
 @dataclass

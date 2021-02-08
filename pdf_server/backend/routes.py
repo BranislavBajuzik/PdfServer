@@ -1,14 +1,15 @@
-import patch  # isort:skip  # noqa: F401  # Patch libraries, must be called first
-
 from typing import Any, Dict
 
 import flask
 
-from pdf_server.api import api
-from pdf_server.app import app
-from pdf_server.database import DatabaseConnection
 from pdf_server.exceptions import BadRequestException
-from pdf_server.pdf_manager import PdfManager
+
+from .pdf_manager import PdfManager
+from .requests import api
+
+__all__: list = []
+
+pdf_manager = PdfManager()
 
 
 @api(rule="/documents", methods=["POST"])
@@ -31,10 +32,3 @@ def pdf_page(document_id: int, number: int) -> flask.Response:
     page_path = pdf_manager.get_page(document_id, number)
 
     return flask.send_file(page_path, mimetype="image/png")
-
-
-if __name__ == "__main__":
-    pdf_manager = PdfManager()
-
-    with DatabaseConnection():
-        app.run(host="0.0.0.0", threaded=True)

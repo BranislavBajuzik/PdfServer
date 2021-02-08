@@ -1,3 +1,4 @@
+import atexit
 from pathlib import Path
 from typing import List
 
@@ -6,13 +7,16 @@ from pdf2image import convert_from_path
 from PIL import Image
 from pony.orm import db_session
 
-from .database import Document, PdfStatus
+from pdf_server.backend import app
+from pdf_server.database import DatabaseConnection, Document, PdfStatus
 
-__all__ = ["process_pdf"]
-
-
-TARGET_RECTANGLE = 1200, 1600
+TARGET_RECTANGLE = app.config["image_size"]
 TARGET_RATIO = TARGET_RECTANGLE[1] / TARGET_RECTANGLE[0]
+
+
+connection = DatabaseConnection()
+connection.connect()
+atexit.register(lambda: connection.disconnect())
 
 
 def normalize_image(img: Image.Image) -> Image.Image:
@@ -35,8 +39,10 @@ def normalize_image(img: Image.Image) -> Image.Image:
     return ret
 
 
-@dramatiq.actor
+@dramatiq.actor(max_retries=0)
 def process_pdf(path: str) -> None:
+    print(f"Processing {path}")
+
     try:
         pages: List[Image.Image] = convert_from_path(path, dpi=500, fmt="png")
     except Exception:
@@ -49,7 +55,7 @@ def process_pdf(path: str) -> None:
         normalize_image(page).save(directory / f"{page_index}.png")
 
     with db_session:
-        if doc := Document.get(int(directory.name)):
+        if doc := Document.get(id=int(directory.name)):
             doc.status = PdfStatus.DONE
             doc.n_pages = page_index
         # Else ????

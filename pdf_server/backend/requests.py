@@ -5,8 +5,9 @@ from typing import Any
 import flask
 from pony.orm import db_session, rollback
 
-from pdf_server.app import app
 from pdf_server.exceptions import DatabaseException, PdfException, RequestException, UnauthorizedRequestException
+
+from . import app
 
 __all__ = ["api"]
 
