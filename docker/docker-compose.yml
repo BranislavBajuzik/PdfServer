@@ -13,6 +13,9 @@ services:
 
   server:
     image: thealt/pdf_server:latest
+    depends_on:
+      - postgres
+      - rabbit-mq
     volumes:
       - type: volume
         source: pdf_storage
@@ -24,6 +27,8 @@ services:
 
   worker:
     image: thealt/pdf_server:latest
+    depends_on:
+      - server
     volumes:
       - type: volume
         source: pdf_storage

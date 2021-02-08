@@ -10,6 +10,12 @@ cd docker
 docker-compose up -d
 ```
 
+### Cleanup
+```shell
+docker-compose down
+docker volume rm docker_pdf_storage
+```
+
 ## Local
 _Tested on Ubuntu 18.4_
 
@@ -67,3 +73,10 @@ Examples in runnable [REST file](test/hand.rest)
     ```
 - `/documents/<int:document_id>/pages/<int:number>`
   - Returns: Rendered PNG
+
+Errors have this JSON body:
+```json
+{
+    "error": "message"
+}
+```
