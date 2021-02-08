@@ -3,4 +3,4 @@ flask
 pony
 pdf2image
 pillow
-psycopg2
+psycopg2-binary
