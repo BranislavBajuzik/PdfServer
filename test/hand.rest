@@ -1,0 +1,23 @@
+POST http://localhost:5000/documents
+Authorization: Bearer 12345
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="document"; filename="document.pdf"
+
+< sample.pdf
+--WebAppBoundary--
+
+###
+
+GET http://localhost:5000/documents/1
+Authorization: Bearer 12345
+Accept: application/json
+
+###
+
+GET http://localhost:5000/documents/1/pages/1
+Authorization: Bearer 12345
+Accept: image/png
+
+###
