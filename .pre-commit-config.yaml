@@ -29,7 +29,7 @@ repos:
         exclude: "__init__.py"
         args:
           - "--max-line-length=120"
-          - "--extend-ignore=E203,E402"
+          - "--extend-ignore=E203,E402,D100,D105,D107"
           - "--pytest-parametrize-names-type=csv"
           - "--pytest-fixture-no-parentheses"
           - "--pytest-parametrize-values-type=tuple"
@@ -41,18 +41,6 @@ repos:
           - flake8-printf-formatting
           - flake8-pytest-style
           - flake8-use-fstring
-
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.3
-    hooks:
-      - id: flake8
-        name: flake8-docstrings
-        exclude: "__init__.py"
-        args:
-          - "--max-line-length=120"
-          - "--select=D"
-          - "--ignore=D100,D105,D107"
-        additional_dependencies:
           - flake8-docstrings
 
   - repo: https://github.com/pre-commit/mirrors-mypy

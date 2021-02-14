@@ -29,6 +29,7 @@ services:
     image: thealt/pdf_server:latest
     depends_on:
       - server
+    restart: on-failure
     volumes:
       - type: volume
         source: pdf_storage

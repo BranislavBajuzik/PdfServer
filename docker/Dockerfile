@@ -4,11 +4,6 @@ LABEL maintainer=branislav.bajuzik@gmail.com
 
 WORKDIR /pdf
 
-COPY pdf_server/ pdf_server/
-COPY pdf_worker/ pdf_worker/
-COPY requirements.txt ./
-COPY docker/config.json pdf_server/config.json
-
 # Get libs
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -19,6 +14,13 @@ RUN apt-get update && \
 
 
 # Install Python Dependencies
+COPY requirements.txt ./
+
 RUN python -m pip install -r requirements.txt && \
     # Cleanup
     rm -rf /root/.cache
+
+# Copy code
+COPY pdf_server/ pdf_server/
+COPY pdf_worker/ pdf_worker/
+COPY docker/config.json pdf_server/config.json

@@ -21,6 +21,7 @@ dramatiq.set_broker(rabbitmq_broker)
 
 @dramatiq.actor
 def process_pdf(path: str) -> None:
+    """A dummy definition of a Dramatiq worker. Will be used only to send messages to the queue."""  # noqa: D401
     pass
 
 

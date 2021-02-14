@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 import flask
 
 from pdf_server.exceptions import BadRequestException
@@ -13,23 +11,23 @@ pdf_manager = PdfManager()
 
 
 @api(rule="/documents", methods=["POST"])
-def pdf_upload() -> Dict[str, int]:
+def pdf_upload() -> flask.Response:
     """Upload PDF for processing."""
     if (doc := flask.request.files.get("document")) is None:
         raise BadRequestException("Form-data `document` is required")
 
     document_id = pdf_manager.upload(document_bytes=doc.read())
 
-    return {"id": document_id}
+    return flask.jsonify({"id": document_id})
 
 
 @api(rule="/documents/<int:document_id>", methods=["GET"])
-def pdf_info(document_id: int) -> Dict[str, Any]:
+def pdf_info(document_id: int) -> flask.Response:
     """Get info about the requested PDF.
 
     :param document_id: Id of the requested document.
     """
-    return pdf_manager.get_info(document_id).to_dict()
+    return flask.jsonify(pdf_manager.get_info(document_id).to_dict())
 
 
 @api(rule="/documents/<int:document_id>/pages/<int:number>", methods=["GET"])

@@ -1,5 +1,6 @@
 from collections import Callable
 from functools import partial, wraps
+from hmac import compare_digest
 from typing import Any
 
 import flask
@@ -14,12 +15,18 @@ __all__ = ["api"]
 auth_token = app.config["auth_token"]
 
 
+app.register_error_handler(RequestException, RequestException.handler)
+app.register_error_handler(DatabaseException, DatabaseException.handler)
+app.register_error_handler(PdfException, PdfException.handler)
+app.register_error_handler(Exception, lambda ex: (flask.jsonify(error=f"Unknown error: {ex}"), 500))
+
+
 def assert_authorized() -> None:
     """Check that the request is authorized."""
     if token := flask.request.headers.get("Authorization", default=None):
         token = token.split(" ")[1]
 
-    if not auth_token == token:
+    if not compare_digest(auth_token, token):
         raise UnauthorizedRequestException("Invalid token")
 
 
@@ -35,31 +42,12 @@ def api(api_function: Callable = None, /, *, rule: str, **options: Any) -> Calla
     @db_session
     def handler(*args, **kwargs):
         try:
-            try:
-                assert_authorized()
+            assert_authorized()
 
-                ret = api_function(*args, **kwargs)
+            return api_function(*args, **kwargs)
 
-                if isinstance(ret, flask.Response):
-                    return ret
-                if isinstance(ret, tuple):
-                    return flask.jsonify(ret[0]), *ret[1:]
-
-                return flask.jsonify(ret)
-
-            except Exception as ex:
-                rollback()
-                raise ex
-
-        except RequestException as ex:
-            ret = flask.jsonify(error=str(ex)), ex.code
-        except DatabaseException as ex:
-            ret = flask.jsonify(error=f"Database error: {ex}"), 500
-        except PdfException as ex:
-            ret = flask.jsonify(error=f"Internal error: {ex}"), 500
         except Exception as ex:
-            ret = flask.jsonify(error=f"Unknown error: {ex}"), 500
-
-        return ret
+            rollback()
+            raise ex
 
     return app.route(rule, **options)(handler)
