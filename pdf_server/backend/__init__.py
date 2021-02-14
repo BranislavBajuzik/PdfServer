@@ -1,2 +1,2 @@
 from .flask_app import app
-from .routes import *
+from .routes import *  # Register routes
